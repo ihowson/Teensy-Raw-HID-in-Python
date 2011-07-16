@@ -40,7 +40,7 @@
 // These 4 numbers identify your device.  Set these to
 // something that is (hopefully) not used by any others!
 
-// Python Rawhid: this is a magic VID/PID used for the test stub. I haven't
+// TeensyRawhid: this is a magic VID/PID used for the test stub. I haven't
 // checked to see if it's in use anywhere else!
 #define VENDOR_ID		0x16C0
 #define PRODUCT_ID		0x8000

@@ -133,8 +133,7 @@ static PyObject * Rawhid_send(Rawhid* self, PyObject *args, PyObject *kwds)
     }
     else
     {
-        PyErr_SetString(PyExc_IOError, "Sent less data than requested");
-        return NULL;
+        return PyErr_Format(PyExc_IOError, "Sent less data than requested (sent %d bytes, expected %d bytes)", ret, size);
     }
 }
 
@@ -176,13 +175,11 @@ static PyObject * Rawhid_recv(Rawhid* self, PyObject *args, PyObject *kwds)
     else
     {
         free(buf);
-        PyErr_SetString(PyExc_IOError, "Received less data than requested");
-        return NULL;
+        return PyErr_Format(PyExc_IOError, "Received less data than requested (got %d bytes, expected %d bytes)", ret, size);
     }
 
     // I assume that buf is copied, per http://docs.python.org/release/2.0/ext/buildValue.html
-    return Py_BuildValue("s#", buf, 64);
-    // TODO fix length in returned value
+    return Py_BuildValue("s#", buf, ret);
 }
 
 // TODO want to make sure this is executed when we are GCed
