@@ -74,22 +74,21 @@ static PyObject * Rawhid_open(Rawhid* self, PyObject *args, PyObject *keywords)
     /* We don't expose the 'maximum number of devices' parameter to rawhid; it
      * complicates the Python interface and I couldn't think of a use for it.
      * If you want it, send me an email. */
-    static char *kwlist[] = {"vid", "pid", "usage_page", "usage", NULL};
+    static char *kwlist[] = {"vid", "pid", "usage_page", "usage", "product", NULL};
 
     int vid = 0x16c0;
     int pid = 0x0480;
     int usage_page = 0xffab;
     int usage = 0x0200;
+    char *product = NULL; // null-terminated
 
-    int ok = PyArg_ParseTupleAndKeywords(args, keywords, "|iiii", kwlist, &vid, &pid, &usage_page, &usage);
+    int ok = PyArg_ParseTupleAndKeywords(args, keywords, "|iiiiz", kwlist, &vid, &pid, &usage_page, &usage, &product);
     if (!ok)
-    {
         return NULL;
-    }
 
-    //printf("vid = 0x%x, pid = 0x%x, up = 0x%x, u = 0x%x\n", vid, pid, usage_page, usage);
+    //printf("vid = 0x%x, pid = 0x%x, up = 0x%x, u = 0x%x, product = '%s'\n", vid, pid, usage_page, usage, product);
 
-    int dev = rawhid_open(1, vid, pid, usage_page, usage);
+    int dev = rawhid_open(1, vid, pid, usage_page, usage, product);
 
     if (dev)
     {
@@ -210,7 +209,7 @@ static PyObject * Rawhid_isOpened(Rawhid* self)
 // FIXME: make the descriptions match the style of other Python modules
 static PyMethodDef Rawhid_methods[] = {
     {"open", (PyCFunction)Rawhid_open, METH_VARARGS | METH_KEYWORDS, 
-        "Opens a single device that matches vid, pid, usage_page and usage. Defaults are suitable for a Teensy++ 2.0 device. \n\nIf you open() while the device is already opened, the original device will be closed first. You may get the same device on the open()."},
+        "Opens a single device that matches vid, pid, usage_page, usage and product. Defaults are suitable for a Teensy++ 2.0 device. \n\nIf you open() while the device is already opened, the original device will be closed first. You may get the same device on the open()."},
     {"close", (PyCFunction)Rawhid_close, METH_VARARGS | METH_KEYWORDS, 
         "Close device. It is safe to call this method even if the device is already closed."},
     {"send", (PyCFunction)Rawhid_send, METH_VARARGS | METH_KEYWORDS, 

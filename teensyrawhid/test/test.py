@@ -133,25 +133,31 @@ except IOError, e:
     # try opening it again
     rh.open(vid=STUB_VID, pid=STUB_PID)
 
-# regular test case - open, send something, receive it back, close the device
+def testRawhid(rh):
+    # regular test case - open, send something, receive it back, close the device
+    # build input frame
+    inbuf = ''
+    for i in range(1, 65):
+        inbuf += chr(i)
+    assert len(inbuf) == 64
 
-# build input frame
-inbuf = ''
-for i in range(1, 65):
-    inbuf += chr(i)
-assert len(inbuf) == 64
+    rh.send(inbuf, 50)
+    outbuf = rh.recv(64, 50)
+    assert len(outbuf) == len(inbuf)
 
-rh.send(inbuf, 50)
-outbuf = rh.recv(64, 50)
-assert len(outbuf) == len(inbuf)
+    for index in range(len(outbuf)):
+        assert ord(outbuf[index]) == (ord(inbuf[index]) + 1)
 
-for index in range(len(outbuf)):
-    assert ord(outbuf[index]) == (ord(inbuf[index]) + 1)
+    rh.close()
+    rh.close() # confirm that double-close is safe
 
-rh.close()
-rh.close() # confirm that double-close is safe
 
-print "All done!"
+testRawhid(rh)
+
+rh.open(vid=-1, pid=-1, product='TeensyRawhid Test Stub')
+testRawhid(rh)
+
+print "All tests passed!"
 
 # TODO: more testcases that would be useful
 # testcase: try open, recv (timeout), close
