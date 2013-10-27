@@ -23,7 +23,7 @@ Usage
 Create a Rawhid object::
 
     import TeensyRawhid
-    rh = TeensyRahwid.Rawhid()
+    rh = TeensyRawhid.Rawhid()
 
 Open a USB device that uses the Raw HID protocol. By default, it will try to open any connected Teensy++ devices::
 
